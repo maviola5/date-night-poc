@@ -1,42 +1,44 @@
+import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, Button } from 'react-native';
 import { MaterialIcons as Icon } from '@expo/vector-icons';
-
-function HomeScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Home</Text>
-    </View>
-  );
-}
-
-function FriendsScreen() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <Text>Friends</Text>
-    </View>
-  );
-}
+import HomeScreen from '../screens/HomeScreen';
+import FriendsScreen from '../screens/FriendsScreen';
+import HomieScreen from '../screens/HomieScreen';
+import ListScreen from '../screens/ListScreen';
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const TabNavigator = ({ extraData }) => {
+  // console.log(extraData.user);
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: '#000',
+        },
+      }}
+    >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
         options={{
           tabBarLabel: () => {
             return null;
           },
-          tabBarIcon: () => <Icon size={30} style={{}} name="home-filled" />,
+          tabBarIcon: () => <Icon size={30} color="#faeb2c" name="swipe" />,
+        }}
+      >
+        {(props) => <HomieScreen {...props} extraData={extraData} />}
+      </Tab.Screen>
+      <Tab.Screen
+        name="List"
+        component={ListScreen}
+        options={{
+          tabBarLabel: () => {
+            return null;
+          },
+          headerShown: false,
+          tabBarIcon: () => <Icon size={30} color="#faeb2c" name="list" />,
         }}
       />
       <Tab.Screen
@@ -47,7 +49,7 @@ const TabNavigator = () => {
             return null;
           },
           headerShown: false,
-          tabBarIcon: () => <Icon size={30} style={{}} name="people" />,
+          tabBarIcon: () => <Icon size={30} color="#faeb2c" name="people" />,
         }}
       />
     </Tab.Navigator>

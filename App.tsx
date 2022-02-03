@@ -6,6 +6,7 @@ import { LoginScreen, RegistrationScreen } from './screens';
 import { decode, encode } from 'base-64';
 import { auth, onAuthStateChanged, getDoc, db, doc } from './firebase/config';
 import DrawerNavigator from './navigation/DrawerNavigator';
+import { UserContext } from './context/UserContext';
 
 if (!global.btoa) {
   global.btoa = encode;
@@ -33,7 +34,7 @@ export default function App() {
             const userData = doc.data();
             setLoading(false);
             setUser(userData as any);
-            console.log(userData);
+            // console.log(userData);
           })
           .catch((e) => {
             setLoading(false);
@@ -49,40 +50,45 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer
-    // theme={{
-    //   dark: true,
-    //   colors: {
-    //     primary: '#fff',
-    //     background: '#000',
-    //     card: 'rgb(255, 255, 255)',
-    //     text: '#fff',
-    //     border: 'rgb(199, 199, 204)',
-    //     notification: 'rgb(255, 69, 58)',
-    //   },
-    // }}
-    >
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
+    <UserContext.Provider value={user}>
+      <NavigationContainer
+        theme={{
+          dark: true,
+          colors: {
+            primary: '#fff',
+            background: '#faeb2c',
+            card: '#faeb2c',
+            text: '#fff',
+            border: 'rgb(199, 199, 204)',
+            notification: 'rgb(255, 69, 58)',
+          },
         }}
       >
-        {user ? (
-          <Stack.Screen name="Home">
-            {(props) => (
-              <DrawerNavigator
-                {...props}
-                extraData={{ user, toggleAuthScreens }}
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          {user ? (
+            <Stack.Screen name="Home">
+              {(props) => (
+                <DrawerNavigator
+                  {...props}
+                  extraData={{ user, toggleAuthScreens }}
+                />
+              )}
+            </Stack.Screen>
+          ) : (
+            <>
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen
+                name="Registration"
+                component={RegistrationScreen}
               />
-            )}
-          </Stack.Screen>
-        ) : (
-          <>
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Registration" component={RegistrationScreen} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserContext.Provider>
   );
 }

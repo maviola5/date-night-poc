@@ -47,10 +47,10 @@ export default function LoginScreen({ navigation }) {
         style={{ flex: 1, width: '100%' }}
         keyboardShouldPersistTaps="always"
       >
-        <Image
+        {/* <Image
           style={styles.logo}
           source={require('../../assets/images/icon.png')}
-        />
+        /> */}
         <TextInput
           style={styles.input}
           placeholder="E-mail"
@@ -70,13 +70,19 @@ export default function LoginScreen({ navigation }) {
           underlineColorAndroid="transparent"
           autoCapitalize="none"
         />
-        <TouchableOpacity style={styles.button} onPress={() => onLoginPress()}>
+        <TouchableOpacity
+          style={{ ...styles.button, backgroundColor: '#000' }}
+          onPress={() => onLoginPress()}
+        >
           <Text style={styles.buttonTitle}>Log in</Text>
         </TouchableOpacity>
         <View style={styles.footerView}>
           <Text style={styles.footerText}>
             Don't have an account?{' '}
-            <Text onPress={onFooterLinkPress} style={styles.footerLink}>
+            <Text
+              onPress={onFooterLinkPress}
+              style={{ ...styles.footerLink, color: '#000' }}
+            >
               Sign up
             </Text>
           </Text>

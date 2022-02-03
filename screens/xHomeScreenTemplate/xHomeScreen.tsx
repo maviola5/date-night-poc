@@ -16,7 +16,7 @@ import {
 import { collection, db, query, where } from '../../firebase/config';
 import styles from './styles';
 
-export default function HomeScreen(props) {
+const HomeScreen = (props) => {
   const [entityText, setEntityText] = useState('');
   const [entities, setEntities] = useState([] as any[]);
 
@@ -99,4 +99,6 @@ export default function HomeScreen(props) {
       )}
     </View>
   );
-}
+};
+
+export default HomeScreen;

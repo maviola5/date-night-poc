@@ -16,9 +16,9 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from '@firebase/auth';
-import { config } from '../.config';
+import { environment } from '../.environment';
 
-const firebaseConfig = config;
+const firebaseConfig = environment.firebase;
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore();

@@ -56,10 +56,10 @@ export default function RegistrationScreen({ navigation }) {
         style={{ flex: 1, width: '100%' }}
         keyboardShouldPersistTaps="always"
       >
-        <Image
+        {/* <Image
           style={styles.logo}
           source={require('../../assets/images/icon.png')}
-        />
+        /> */}
         <TextInput
           style={styles.input}
           placeholder="Full Name"
@@ -99,7 +99,7 @@ export default function RegistrationScreen({ navigation }) {
           autoCapitalize="none"
         />
         <TouchableOpacity
-          style={styles.button}
+          style={{ ...styles.button, backgroundColor: '#000' }}
           onPress={() => onRegisterPress()}
         >
           <Text style={styles.buttonTitle}>Create account</Text>
@@ -107,7 +107,10 @@ export default function RegistrationScreen({ navigation }) {
         <View style={styles.footerView}>
           <Text style={styles.footerText}>
             Already got an account?{' '}
-            <Text onPress={onFooterLinkPress} style={styles.footerLink}>
+            <Text
+              onPress={onFooterLinkPress}
+              style={{ ...styles.footerLink, color: '#000' }}
+            >
               Log in
             </Text>
           </Text>

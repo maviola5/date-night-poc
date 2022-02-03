@@ -1,16 +1,14 @@
+import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import TabNavigator from './TabNavigator';
 import { MaterialIcons as Icon } from '@expo/vector-icons';
 import { getAuth, signOut } from 'firebase/auth';
-import { useEffect } from 'react';
 import { View, Text } from 'react-native';
 
 const auth = getAuth();
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = ({ extraData, navigation }) => {
-  useEffect(() => {}, []);
-
   function CustomDrawerContent({ navigation, extraData }) {
     return (
       <View
@@ -20,21 +18,28 @@ const DrawerNavigator = ({ extraData, navigation }) => {
           flex: 1,
           justifyContent: 'flex-start',
           alignItems: 'flex-start',
+          backgroundColor: '#faeb2c',
         }}
       >
-        <Icon name="face" size={50} />
-        <Text style={{ marginTop: 20, marginBottom: 20, marginLeft: 5 }}>
+        <Icon name="face" size={50} color="#000" />
+        <Text
+          style={{
+            marginTop: 20,
+            marginBottom: 20,
+            marginLeft: 5,
+            color: 'black',
+          }}
+        >
           {extraData.user.email}
         </Text>
         <Icon.Button
           name="logout"
           size={25}
           iconStyle={{ color: '#000' }}
-          backgroundColor="#fff"
+          backgroundColor="#faeb2c"
           onPress={() =>
             signOut(auth)
               .then(() => {
-                console.log('sign out success');
                 extraData.toggleAuthScreens();
                 navigation.navigate('Login');
               })
@@ -47,6 +52,8 @@ const DrawerNavigator = ({ extraData, navigation }) => {
     );
   }
 
+  // console.log(extraData.user);
+
   return (
     <Drawer.Navigator
       drawerContent={(props) => (
@@ -55,19 +62,26 @@ const DrawerNavigator = ({ extraData, navigation }) => {
     >
       <Drawer.Screen
         name="DrawerHome"
-        component={TabNavigator}
         options={({ navigation }) => ({
-          title: '',
+          title: 'Date Night',
+          headerTitleStyle: {
+            color: '#000',
+          },
           headerLeft: () => (
             <Icon
               name="menu"
               size={30}
               style={{ marginLeft: 10 }}
+              color="#000"
               onPress={() => navigation.toggleDrawer()}
             />
           ),
         })}
-      />
+      >
+        {(props) => (
+          <TabNavigator {...props} extraData={extraData}></TabNavigator>
+        )}
+      </Drawer.Screen>
     </Drawer.Navigator>
   );
 };
