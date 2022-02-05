@@ -50,45 +50,42 @@ export default function App() {
   }
 
   return (
-    <UserContext.Provider value={user}>
-      <NavigationContainer
-        theme={{
-          dark: true,
-          colors: {
-            primary: '#fff',
-            background: '#faeb2c',
-            card: '#faeb2c',
-            text: '#fff',
-            border: 'rgb(199, 199, 204)',
-            notification: 'rgb(255, 69, 58)',
-          },
+    // <UserContext.Provider value={user}>
+    <NavigationContainer
+      theme={{
+        dark: true,
+        colors: {
+          primary: '#fff',
+          background: '#faeb2c',
+          card: '#faeb2c',
+          text: '#fff',
+          border: 'rgb(199, 199, 204)',
+          notification: 'rgb(255, 69, 58)',
+        },
+      }}
+    >
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
         }}
       >
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          {user ? (
-            <Stack.Screen name="Home">
-              {(props) => (
-                <DrawerNavigator
-                  {...props}
-                  extraData={{ user, toggleAuthScreens }}
-                />
-              )}
-            </Stack.Screen>
-          ) : (
-            <>
-              <Stack.Screen name="Login" component={LoginScreen} />
-              <Stack.Screen
-                name="Registration"
-                component={RegistrationScreen}
+        {user ? (
+          <Stack.Screen name="Home">
+            {(props) => (
+              <DrawerNavigator
+                {...props}
+                extraData={{ user, toggleAuthScreens }}
               />
-            </>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </UserContext.Provider>
+            )}
+          </Stack.Screen>
+        ) : (
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Registration" component={RegistrationScreen} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+    // </UserContext.Provider>
   );
 }

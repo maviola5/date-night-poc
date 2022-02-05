@@ -1,15 +1,12 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons as Icon } from '@expo/vector-icons';
-import HomeScreen from '../screens/HomeScreen';
-import FriendsScreen from '../screens/FriendsScreen';
-import HomieScreen from '../screens/HomieScreen';
-import ListScreen from '../screens/ListScreen';
+import FriendsStackNavigation from './FriendStackNavigator';
+import { HomeScreen, WatchListScreen } from '../screens';
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = ({ extraData }) => {
-  // console.log(extraData.user);
   return (
     <Tab.Navigator
       screenOptions={{
@@ -28,11 +25,11 @@ const TabNavigator = ({ extraData }) => {
           tabBarIcon: () => <Icon size={30} color="#faeb2c" name="swipe" />,
         }}
       >
-        {(props) => <HomieScreen {...props} extraData={extraData} />}
+        {(props) => <HomeScreen {...props} extraData={extraData} />}
       </Tab.Screen>
       <Tab.Screen
         name="List"
-        component={ListScreen}
+        component={WatchListScreen}
         options={{
           tabBarLabel: () => {
             return null;
@@ -42,8 +39,8 @@ const TabNavigator = ({ extraData }) => {
         }}
       />
       <Tab.Screen
-        name="Friends"
-        component={FriendsScreen}
+        name="FriendsStack"
+        component={FriendsStackNavigation}
         options={{
           tabBarLabel: () => {
             return null;

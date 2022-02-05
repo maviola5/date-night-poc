@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { User } from '../models/User';
-import { Show } from '../models/Show';
 import { getAuth } from 'firebase/auth';
 
 const http = axios.create({ baseURL: 'http://localhost:8080' });
@@ -18,11 +16,11 @@ export const getAuthHeader = async () => {
 };
 
 export const getTrending = async (page: number) => {
-  const jwt = await getJwt();
-  const { data } = await http.get('/trending', {
-    params: { page },
-    ...(await getAuthHeader()),
-  });
+  const { data } = await http.post(
+    '/shows/get_trending',
+    { page },
+    await getAuthHeader()
+  );
   return data as { page: number; results: any[] };
 };
 
@@ -38,38 +36,39 @@ export interface HandlePreferenceInput {
 
 export const setShowPreferences = async (input: HandlePreferenceInput) => {
   console.log('Setting preferences.', { input });
-  const jwt = await getJwt();
-  const { data } = await http.post(
-    '/shows/preferences',
-    input,
-    await getAuthHeader()
-  );
+  await http.post('/show_preferences/add', input, await getAuthHeader());
 };
 
-export const getShowList = async () => {
-  console.log('Fetching show list');
-  const jwt = await getJwt();
-  const { data } = await http.get('/shows', await getAuthHeader());
+export const getWatchList = async () => {
+  console.log('Fetching show preferences.');
+  const { data } = await http.post(
+    '/show_preferences/list',
+    {},
+    await getAuthHeader()
+  );
   return data;
 };
 
 export const getUsers = async (name: string) => {
   console.log('Fetching user list');
-  const jwt = await getJwt();
-  try {
-    const { data } = await http.get(`/users/${name}`, await getAuthHeader());
-    return data;
-  } catch (e) {
-    console.log(e);
-  }
+  const { data } = await http.post(
+    '/users/list',
+    { name },
+    await getAuthHeader()
+  );
+  return data;
 };
 
 export const addFriend = async (id: string, name: string, avatar?: string) => {
   console.log('Adding friend', { id, name, avatar });
-  const jwt = await getJwt();
+  await http.post('/friends/add', { id, name, avatar }, await getAuthHeader());
+};
+
+export const removeFriend = async (id: string) => {
+  console.log('Removing friend');
   const { data } = await http.post(
-    '/users/add_friend',
-    { id, name, avatar },
+    '/friends/remove',
+    { id },
     await getAuthHeader()
   );
   return data;
@@ -77,7 +76,16 @@ export const addFriend = async (id: string, name: string, avatar?: string) => {
 
 export const getFriends = async () => {
   console.log('Fetching friends.');
-  const jwt = await getJwt();
-  const { data } = await http.post('/friends/get', {}, await getAuthHeader());
+  const { data } = await http.post('/friends/list', {}, await getAuthHeader());
+  return data;
+};
+
+export const getFriendsWatchList = async (input) => {
+  console.log('Fetching friends watch list');
+  const { data } = await http.post(
+    '/show_preferences/list_by_friend',
+    input,
+    await getAuthHeader()
+  );
   return data;
 };

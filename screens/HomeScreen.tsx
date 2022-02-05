@@ -1,53 +1,158 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Text, ImageBackground } from 'react-native';
 import { MaterialIcons as Icon } from '@expo/vector-icons';
-import MovieCard from '../components/MovieCard';
-import { getTrending } from '../services/dateNightService';
+import {
+  getTrending,
+  setShowPreferences,
+} from '../services/date-night-service';
+import SwipeCards from 'react-native-swipe-cards-deck';
+import { environment } from '../.environment';
+import { Show } from '../models/Show';
+const {
+  movieServiceAPI: { imageURL },
+} = environment;
 
-const HomeScreen = ({ navigation }) => {
-  const [trending, setTrending] = useState([] as any[]);
+const HomeScreen = ({ extraData }) => {
+  const [cards, setCards] = useState([] as any[]);
   const [page, setPage] = useState(1);
+  const [count, setCount] = useState(0);
+  const [user, setUser] = useState(extraData.user);
 
   useEffect(() => {
-    if (trending.length) {
-      console.log('not yet - ' + trending.length);
+    console.log('count: ', count);
+    if (count) {
+      console.log('not yet, cards lenght is: ' + cards.length);
       return;
     } else {
-      console.log('getting more ' + page);
+      console.log('getting more with page: ' + page);
       getTrending(page).then((res) => {
-        setTrending(res.results.slice(0, 5));
-        setPage(res.page);
+        setCards((cards) => res.results);
+        setPage((page) => page + 1);
+        setCount((count) => res.results.length);
       });
     }
-  }, [trending]);
+  }, [count]);
 
-  const [lastDirection, setLastDirection] = useState();
+  function handleYup(card: Show) {
+    const show = cards.find((c) => c.id === card.id);
+    setShowPreferences({
+      userId: user.id,
+      showId: show.id,
+      yes: true,
+      showTitle: show.name || show.title,
+      showPoster: `${imageURL}w600_and_h900_bestv2${show.poster_path}`,
+    });
+    setCount((count) => count - 1);
+    return true; // return false if you wish to cancel the action
+  }
 
-  const swiped = (direction, nameToDelete) => {
-    // console.log(direction);
-    // if (direction === 'right') {
-    //   console.log(`you liked ${nameToDelete}`);
-    // }
-    // if (direction === 'left') {
-    //   console.log(`you disliked ${nameToDelete}`);
-    // }
+  function handleNope(card) {
+    const show = cards.find((c) => c.id === card.id);
+    setShowPreferences({
+      userId: user.id,
+      showId: show.id,
+      no: true,
+      showTitle: show.name || show.title,
+      showPoster: `${imageURL}w600_and_h900_bestv2${show.poster_path}`,
+    });
+    setCount((count) => count - 1);
+    return true;
+  }
 
-    // console.log('removing: ' + nameToDelete);
-    // setLastDirection(direction);
-    // setTrending(trending.slice(1));
+  function addToWatchList() {}
 
-    // setTrending(trending.filter((x, i) => i !== 1));
-    // console.log('trending' + trending.length);
-    console.log(nameToDelete);
-    console.log();
-    setTrending((trending) => trending.slice(1));
-  };
+  function addToWatched() {}
+
+  function shareShow() {
+    console.log('Sharing show', {
+      user: user.id,
+    });
+  }
+
+  function Card({ data, dimensions, handleYup }) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#000',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <ImageBackground
+          source={{
+            uri: `${imageURL}w600_and_h900_bestv2${data.poster_path}`,
+          }}
+          style={{
+            width: dimensions?.width,
+            height: dimensions?.height,
+            flex: 1,
+          }}
+        >
+          <Text
+            style={{
+              position: 'absolute',
+              top: 0,
+              margin: 10,
+              paddingRight: 15,
+              paddingLeft: 15,
+              paddingTop: 5,
+              paddingBottom: 5,
+              color: '#00040D',
+              backgroundColor: '#faeb2c',
+              fontWeight: '600',
+            }}
+          >
+            {data.title || data.name}
+          </Text>
+          <Icon
+            name="thumb-down"
+            size={50}
+            color="#faeb2c"
+            style={{
+              position: 'absolute',
+              top: dimensions?.height / 2 - 100,
+              left: 20,
+            }}
+          />
+
+          <Icon
+            name="thumb-up"
+            size={50}
+            color="#faeb2c"
+            style={{
+              position: 'absolute',
+              top: dimensions?.height / 2 - 100,
+              right: 20,
+            }}
+          />
+        </ImageBackground>
+      </View>
+    );
+  }
+
+  function StatusCard({ text }) {
+    return (
+      <View
+        style={{
+          backgroundColor: 'white',
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 22,
+          }}
+        >
+          {text}
+        </Text>
+      </View>
+    );
+  }
 
   const initialDimensions: null | any = null;
   const [dimensions, setDimensions] = useState(initialDimensions);
   const onLayout = (event) => {
     if (dimensions) return;
-    console.log(event.nativeEvent.layout);
     let { width, height } = event.nativeEvent.layout;
     setDimensions({ width, height });
   };
@@ -57,19 +162,44 @@ const HomeScreen = ({ navigation }) => {
       onLayout={onLayout}
       style={{
         flex: 1,
-        backgroundColor: 'black',
+        backgroundColor: '#000',
       }}
     >
-      {trending.map((movie) => {
-        return (
-          <MovieCard
-            key={movie.id}
-            movie={movie}
-            onSwipe={swiped}
-            dimensions={dimensions}
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#000',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {cards ? (
+          <SwipeCards
+            cards={cards}
+            renderCard={(cardData) => (
+              <Card
+                data={cardData}
+                handleYup={handleYup}
+                dimensions={dimensions}
+              />
+            )}
+            keyExtractor={(cardData) => String(cardData.id)}
+            renderNoMoreCards={() => <StatusCard text="No more cards..." />}
+            actions={{
+              nope: {
+                show: false,
+                onAction: handleNope,
+              },
+              yup: {
+                show: false,
+                onAction: handleYup,
+              },
+            }}
           />
-        );
-      })}
+        ) : (
+          <StatusCard text="Loading..." />
+        )}
+      </View>
       <View
         style={{
           position: 'absolute',
